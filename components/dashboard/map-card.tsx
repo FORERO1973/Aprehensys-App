@@ -1,0 +1,29 @@
+
+'use client';
+
+import type { Apprehension } from '@/lib/types';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
+import dynamic from 'next/dynamic';
+
+const InteractiveMap = dynamic(() => import('./interactive-map').then(mod => mod.InteractiveMap), {
+  ssr: false,
+  loading: () => <Skeleton className="h-[400px] w-full" />,
+});
+import { Suspense } from 'react';
+import { Skeleton } from '../ui/skeleton';
+
+export function MapCard({ data, isAggregated }: { data: Apprehension[], isAggregated: boolean }) {
+  return (
+    <Card className="h-full">
+      <CardHeader>
+        <CardTitle>Ubicación de Aprehensiones</CardTitle>
+        <CardDescription>Visualización geográfica de los puntos de aprehensión.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
+           <InteractiveMap data={data} isAggregated={isAggregated}/>
+        </Suspense>
+      </CardContent>
+    </Card>
+  );
+}
