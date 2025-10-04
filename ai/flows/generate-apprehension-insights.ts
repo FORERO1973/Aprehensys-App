@@ -29,12 +29,13 @@ const prompt = ai.definePrompt({
   name: 'generateApprehensionInsightsPrompt',
   input: {schema: GenerateApprehensionInsightsInputSchema},
   output: {schema: GenerateApprehensionInsightsOutputSchema},
-  prompt: `You are an expert data analyst specializing in law enforcement data.
-  Your task is to analyze the provided apprehension data and extract key insights and trends.
-  Identify significant patterns, anomalies, and correlations in the data.
-  Present the insights in a concise and easy-to-understand manner.
+  prompt: `Eres un analista de datos experto especializado en datos de fuerzas del orden.
+  Tu tarea es analizar los datos de aprehensiones proporcionados y extraer ideas y tendencias clave.
+  Identifica patrones, anomalías y correlaciones significativas en los datos.
+  Presenta las ideas de una manera concisa y fácil de entender.
+  La respuesta debe estar en español.
 
-  Apprehension Data: {{{apprehensionData}}}
+  Datos de Aprehensión: {{{apprehensionData}}}
   `,
 });
 
