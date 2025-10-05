@@ -1,4 +1,3 @@
-
 import type { Apprehension } from './types';
 
 function parseDate(dateString: string): string {
@@ -1594,6 +1593,7 @@ const rawData = [
     "municipality": "CACOTA",
     "commune": "54125",
     "address": "CRA 3 N 3-21",
+
     "classification": "OTROS",
     "sector": "TIENDA LA CACOTEÑA",
     "origin": "GOBERNACION",

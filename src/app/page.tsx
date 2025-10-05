@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { Apprehension } from '@/lib/types';
@@ -17,47 +16,69 @@ import { ApprehensionsTable } from '@/components/dashboard/apprehensions-table';
 import { ClassificationChart, ValueByOriginChart } from '@/components/dashboard/charts';
 import { Logo } from '@/components/icons';
 import AiInsightsButton from '@/components/dashboard/ai-insights-button';
-import { apprehensions as initialData } from '@/lib/apprehension-data';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeToggle } from '@/components/dashboard/theme-toggle';
 import { MapCard } from '@/components/dashboard/map-card';
+import { Loader2 } from 'lucide-react';
+import { processCsvData } from '@/lib/csv-parser';
 
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS-MFbrDOwLQxCGKMKLRHZIn16xNjLAvGqeH1fX-FyPUDl8mfwDM-hzN1L0Bs942_Uycf-0FYS2ptWU/pub?gid=1743869807&single=true&output=csv';
 
 export default function Home() {
-  const [isMounted, setIsMounted] = useState(false);
+  const [initialData, setInitialData] = useState<Apprehension[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [selectedMunicipality, setSelectedMunicipality] = useState('all');
   const [selectedCommune, setSelectedCommune] = useState('all');
 
   useEffect(() => {
-    setIsMounted(true);
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await processCsvData(CSV_URL);
+        setInitialData(data);
+        setError(null);
+      } catch (e: any) {
+        console.error("Failed to fetch or process data:", e);
+        setError("No se pudieron cargar los datos. Por favor, intente de nuevo más tarde.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const municipalities = useMemo(() => {
+    if (initialData.length === 0) return [];
     const allMunicipalities = initialData.map((item) => item.municipality);
     return ['all', ...Array.from(new Set(allMunicipalities))];
-  }, []);
+  }, [initialData]);
 
   const communes = useMemo(() => {
-    if (selectedMunicipality === 'all') {
+    if (selectedMunicipality === 'all' || initialData.length === 0) {
       return ['all'];
     }
     const allCommunes = initialData
       .filter((item) => item.municipality === selectedMunicipality && item.commune)
       .map((item) => item.commune as string);
     return ['all', ...Array.from(new Set(allCommunes))];
-  }, [selectedMunicipality]);
+  }, [selectedMunicipality, initialData]);
 
   const filteredData = useMemo(() => {
+    if (initialData.length === 0) return [];
     return initialData
       .filter((item) => selectedMunicipality === 'all' || item.municipality === selectedMunicipality)
       .filter((item) => selectedCommune === 'all' || item.commune === selectedCommune);
-  }, [selectedMunicipality, selectedCommune]);
-  
+  }, [initialData, selectedMunicipality, selectedCommune]);
+
   React.useEffect(() => {
     setSelectedCommune('all');
   }, [selectedMunicipality]);
 
   const stats = useMemo(() => {
+    if (filteredData.length === 0) return { totalValue: 0, totalApprehensions: 0, averageValue: 0, uniqueClassifications: 0 };
     const totalValue = filteredData.reduce((acc, item) => acc + item.commercialValue, 0);
     const totalApprehensions = filteredData.length;
     const averageValue = totalApprehensions > 0 ? totalValue / totalApprehensions : 0;
@@ -66,8 +87,26 @@ export default function Home() {
     return { totalValue, totalApprehensions, averageValue, uniqueClassifications };
   }, [filteredData]);
 
-  if (!isMounted) {
-    return null;
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          <p className="text-muted-foreground">Cargando datos del dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-destructive mb-2">Error</h2>
+          <p className="text-muted-foreground">{error}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -100,7 +139,7 @@ export default function Home() {
                   <SelectContent>
                     {municipalities.map((m) => (
                       <SelectItem key={m} value={m} className="capitalize">
-                        {m === 'all' ? 'Todos los municipios' : m}
+                        {m === 'all' ? 'Todos los municipios' : m.toLowerCase()}
                       </SelectItem>
                     ))}
                   </SelectContent>
