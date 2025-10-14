@@ -29,8 +29,8 @@ export function processCsvData(csvUrl: string): Promise<Apprehension[]> {
       download: true,
       header: true,
       skipEmptyLines: true,
-      transformHeader: header => header.trim(),
-      complete: (results) => {
+      transformHeader: (header: string) => header.trim(),
+      complete: (results: Papa.ParseResult<any>, file: string) => {
         try {
           if (results.errors.length > 0) {
             console.error("CSV parsing errors:", results.errors);
@@ -67,7 +67,7 @@ export function processCsvData(csvUrl: string): Promise<Apprehension[]> {
           reject(error);
         }
       },
-      error: (error: any) => {
+      error: (error: Error, file: string) => {
         reject(error);
       },
     });

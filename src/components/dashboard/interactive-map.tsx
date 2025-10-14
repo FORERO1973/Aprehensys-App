@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { Apprehension } from '@/lib/types';
@@ -52,8 +51,9 @@ const getCenter = (data: Apprehension[] | AggregatedData[]) => {
 };
 
 const mapTilerProvider = (x: number, y: number, z: number, dpr?: number) => {
-  return `https://tile.openstreetmap.org/${z}/${x}/${y}.png`
-}
+  const apiKey = 'yN9raINYZ8kITbF3sYHm'; // Reemplaza con tu clave de MapTiler
+  return `https://api.maptiler.com/maps/basic-v2/256/${z}/${x}/${y}${dpr >= 2 ? '@2x' : ''}.png?key=${apiKey}`;
+};
 
 export function InteractiveMap({ data, isAggregated }: { data: Apprehension[], isAggregated: boolean }) {
   const [selectedMarker, setSelectedMarker] = useState<AggregatedData | null>(null);
@@ -105,12 +105,18 @@ export function InteractiveMap({ data, isAggregated }: { data: Apprehension[], i
             key={`${item.municipality}-${index}`}
             width={30}
             anchor={[item.lat, item.lng]}
-            color={'#9333ea'}
             onClick={(event) => {
                 event.event.stopPropagation();
                 setSelectedMarker(item)
             }}
-          />
+          >
+            <svg width="30" height="40" viewBox="0 0 24 24">
+              <path
+                d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+                fill="#9333ea"
+              />
+            </svg>
+          </Marker>
         ))}
 
         {selectedMarker && (
