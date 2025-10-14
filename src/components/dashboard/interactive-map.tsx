@@ -50,7 +50,7 @@ const getCenter = (data: Apprehension[] | AggregatedData[]) => {
   return { center, zoom: Math.min(zoom, 18) }; // Cap zoom at 18
 };
 
-const mapTilerProvider = (x: number, y: number, z: number, dpr?: number) => {
+const mapTilerProvider = (x: number, y: number, z: number, dpr: number = 1) => {
   const apiKey = 'yN9raINYZ8kITbF3sYHm'; // Reemplaza con tu clave de MapTiler
   return `https://api.maptiler.com/maps/basic-v2/256/${z}/${x}/${y}${dpr >= 2 ? '@2x' : ''}.png?key=${apiKey}`;
 };
