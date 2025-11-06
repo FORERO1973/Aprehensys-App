@@ -39,7 +39,7 @@ export function processCsvData(csvUrl: string): Promise<Apprehension[]> {
           const processedData = (results.data as any[]).map((row: any) => {
             const commercialValue = parseFloat(row.ValorComercial) || 0;
             let municipality = (row.Municipio || 'Desconocido').trim().toUpperCase();
-            
+
             if (municipality.startsWith('PAMPLONA')) {
               municipality = 'PAMPLONA COLOMBIA';
             }
@@ -59,6 +59,7 @@ export function processCsvData(csvUrl: string): Promise<Apprehension[]> {
               commercialValue: commercialValue,
               lat: lat,
               lng: lng,
+              leader: row.LiderOperativo || 'Desconocido', // Nueva columna para el líder del operativo
             };
           }).filter(item => item.id && item.municipality !== 'DESCONOCIDO' && item.lat !== 0 && item.lng !== 0);
 

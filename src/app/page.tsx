@@ -31,6 +31,7 @@ export default function Home() {
 
   const [selectedMunicipality, setSelectedMunicipality] = useState('all');
   const [selectedCommune, setSelectedCommune] = useState('all');
+  const [selectedLeader, setSelectedLeader] = useState('all');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,12 +67,19 @@ export default function Home() {
     return ['all', ...Array.from(new Set(allCommunes))];
   }, [selectedMunicipality, initialData]);
 
+  const leaders = useMemo(() => {
+    if (initialData.length === 0) return ['all'];
+    const allLeaders = initialData.map((item) => item.leader);
+    return ['all', ...Array.from(new Set(allLeaders))];
+  }, [initialData]);
+
   const filteredData = useMemo(() => {
     if (initialData.length === 0) return [];
     return initialData
       .filter((item) => selectedMunicipality === 'all' || item.municipality === selectedMunicipality)
-      .filter((item) => selectedCommune === 'all' || item.commune === selectedCommune);
-  }, [initialData, selectedMunicipality, selectedCommune]);
+      .filter((item) => selectedCommune === 'all' || item.commune === selectedCommune)
+      .filter((item) => selectedLeader === 'all' || item.leader === selectedLeader);
+  }, [initialData, selectedMunicipality, selectedCommune, selectedLeader]);
 
   React.useEffect(() => {
     setSelectedCommune('all');
@@ -159,6 +167,25 @@ export default function Home() {
                     {communes.map((c) => (
                       <SelectItem key={c} value={c} className="capitalize">
                         {c === 'all' ? 'Todas las comunas' : c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Filtrar por Líder del Operativo</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Select value={selectedLeader} onValueChange={setSelectedLeader}>
+                  <SelectTrigger className="capitalize">
+                    <SelectValue placeholder="Seleccione líder" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {leaders.map((l) => (
+                      <SelectItem key={l} value={l} className="capitalize">
+                        {l === 'all' ? 'Todos los líderes' : l}
                       </SelectItem>
                     ))}
                   </SelectContent>

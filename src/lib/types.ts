@@ -10,4 +10,5 @@ export interface Apprehension {
   commercialValue: number;
   lat: number;
   lng: number;
+  leader: string; // Nuevo campo para el líder del operativo
 }

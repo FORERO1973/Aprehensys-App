@@ -32,7 +32,8 @@ const prompt = ai.definePrompt({
   prompt: `Eres un analista de datos experto, especializado en datos de fuerzas del orden.
 Tu tarea es analizar los datos de aprehensiones proporcionados y extraer ideas clave y tendencias.
 Identifica patrones significativos, anomalías y correlaciones en los datos.
-Presenta las ideas de manera concisa y fácil de entender. La respuesta debe estar en español.
+Presenta las ideas de manera concisa y fácil de entender. Indicar cual fue el Lider de Operativo con mayor Aprehensiones.
+La respuesta debe estar en español.
 
 Datos de Aprehensión: {{{apprehensionData}}}
   `,
